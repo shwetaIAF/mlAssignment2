@@ -1,17 +1,17 @@
 import os
-import pickle
 import subprocess
+import pickle
 import streamlit as st
 import pandas as pd
 
 st.title("ML Assignment 2 - Model Comparison")
 
-# If models not present, train them
+# STEP 1: If models not present, train them
 if not os.path.exists("model/saved_models.pkl"):
     st.info("Training models for first time... please wait ⏳")
     subprocess.run(["python", "model/train_models.py"])
 
-# Load models
+# STEP 2: Now load models (after training)
 with open("model/saved_models.pkl", "rb") as f:
     models = pickle.load(f)
 
@@ -38,3 +38,4 @@ if uploaded_file:
         results[name] = preds[:5]
 
     st.write(results)
+
