@@ -10,15 +10,15 @@ from sklearn.metrics import (
 st.title("Machine Learning Classification App")
 
 # Load models
-with open("model/saved_models.pkl", "rb") as f:
+with open("saved_models.pkl", "rb") as f:
     models = pickle.load(f)
 
 # Load scaler
-with open("model/scaler.pkl", "rb") as f:
+with open("scaler.pkl", "rb") as f:
     scaler = pickle.load(f)
 
 # Load label encoder
-with open("model/label_encoder.pkl", "rb") as f:
+with open("label_encoder.pkl", "rb") as f:
     label_encoder = pickle.load(f)
 
 # Upload dataset
@@ -67,3 +67,4 @@ if uploaded_file is not None:
                 target_names=label_encoder.classes_
             )
         )
+
