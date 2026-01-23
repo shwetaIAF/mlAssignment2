@@ -6,8 +6,8 @@ import os
 import subprocess
 
 # If model files are not present, train them
-if not os.path.exists("model/saved_models.pkl"):
-    subprocess.run(["python", "model/train_models.py"])
+if not os.path.exists("saved_models.pkl"):
+    subprocess.run(["python", "train_models.py"])
 
 
 from sklearn.metrics import (
@@ -75,5 +75,6 @@ if uploaded_file is not None:
                 target_names=label_encoder.classes_
             )
         )
+
 
 
