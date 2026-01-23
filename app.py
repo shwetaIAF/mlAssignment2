@@ -1,68 +1,66 @@
-import streamlit as st
+import os
 import pickle
 import pandas as pd
-import os
-import subprocess
 
-# Train models automatically on cloud
-if not os.path.exists("model/saved_models.pkl"):
-    subprocess.run(["python", "model/train_models.py"])
-
-# Load models
-with open("model/saved_models.pkl", "rb") as f:
-    models = pickle.load(f)
-
-with open("model/scaler.pkl", "rb") as f:
-    scaler = pickle.load(f)
+from sklearn.preprocessing import StandardScaler, LabelEncoder
+from sklearn.linear_model import LogisticRegression
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.naive_bayes import GaussianNB
+from sklearn.ensemble import RandomForestClassifier
+from xgboost import XGBClassifier
 
 
-# Upload dataset
-uploaded_file = st.file_uploader("Upload Test CSV (with Activity column)", type=["csv"])
+# Create model folder if not exists
+os.makedirs("model", exist_ok=True)
 
-# Model selection
-model_name = st.selectbox("Select Model", list(models.keys()))
+print("Downloading dataset from UCI...")
 
-if uploaded_file is not None:
-    df = pd.read_csv(uploaded_file)
+# UCI HAR Dataset (official)
+url = "https://raw.githubusercontent.com/selva86/datasets/master/HARtrain.csv"
+df = pd.read_csv(url)
 
-    if "Activity" not in df.columns:
-        st.error("❌ Target column 'Activity' not found in CSV")
-    else:
-        X = df.drop("Activity", axis=1)
-        y = df["Activity"]
+# Target and features
+X = df.drop("Activity", axis=1)
+y = df["Activity"]
 
-        # Encode true labels
-        y_encoded = label_encoder.transform(y)
+# Encode labels
+label_encoder = LabelEncoder()
+y_encoded = label_encoder.fit_transform(y)
 
-        # Scale features
-        X_scaled = scaler.transform(X)
+with open("model/label_encoder.pkl", "wb") as f:
+    pickle.dump(label_encoder, f)
 
-        # Predict (encoded)
-        model = models[model_name]
-        y_pred_encoded = model.predict(X_scaled)
+# Scale features
+scaler = StandardScaler()
+X_scaled = scaler.fit_transform(X)
 
-        # Decode predictions (for display only)
-        y_pred = label_encoder.inverse_transform(y_pred_encoded)
+with open("model/scaler.pkl", "wb") as f:
+    pickle.dump(scaler, f)
 
-        st.subheader("📊 Evaluation Metrics")
+print("Training models...")
 
-        st.write("Accuracy:", accuracy_score(y_encoded, y_pred_encoded))
-        st.write("Precision:", precision_score(y_encoded, y_pred_encoded, average="weighted"))
-        st.write("Recall:", recall_score(y_encoded, y_pred_encoded, average="weighted"))
-        st.write("F1 Score:", f1_score(y_encoded, y_pred_encoded, average="weighted"))
+models = {
+    "Logistic Regression": LogisticRegression(max_iter=1000),
+    "Decision Tree": DecisionTreeClassifier(),
+    "KNN": KNeighborsClassifier(),
+    "Naive Bayes": GaussianNB(),
+    "Random Forest": RandomForestClassifier(n_estimators=100),
+    "XGBoost": XGBClassifier(
+        objective="multi:softmax",
+        num_class=len(set(y_encoded)),
+        eval_metric="mlogloss"
+    ),
+}
 
-        st.subheader("📌 Confusion Matrix (Encoded)")
-        st.write(confusion_matrix(y_encoded, y_pred_encoded))
+trained_models = {}
 
-        st.subheader("📄 Classification Report")
-        st.text(
-            classification_report(
-                y_encoded,
-                y_pred_encoded,
-                target_names=label_encoder.classes_
-            )
-        )
+for name, model in models.items():
+    model.fit(X_scaled, y_encoded)
+    trained_models[name] = model
+    print(f"{name} trained")
 
+with open("model/saved_models.pkl", "wb") as f:
+    pickle.dump(trained_models, f)
 
-
-
+print("✅ All models trained and saved successfully!")
