@@ -2,6 +2,14 @@ import streamlit as st
 import pandas as pd
 import pickle
 
+import os
+import subprocess
+
+# If model files are not present, train them
+if not os.path.exists("model/saved_models.pkl"):
+    subprocess.run(["python", "model/train_models.py"])
+
+
 from sklearn.metrics import (
     accuracy_score, precision_score, recall_score,
     f1_score, confusion_matrix, classification_report
@@ -67,4 +75,5 @@ if uploaded_file is not None:
                 target_names=label_encoder.classes_
             )
         )
+
 
