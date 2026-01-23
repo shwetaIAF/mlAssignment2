@@ -8,26 +8,26 @@ from sklearn.metrics import (
 from sklearn.preprocessing import label_binarize
 
 # Load test data
-df = pd.read_csv("data/test.csv")
+df = pd.read_csv("test.csv")
 
 X_test = df.drop("Activity", axis=1)
 y_test = df["Activity"]
 
 # Load scaler
-with open("model/scaler.pkl", "rb") as f:
+with open("scaler.pkl", "rb") as f:
     scaler = pickle.load(f)
 
 X_test_scaled = scaler.transform(X_test)
 
 # Load label encoder
-with open("model/label_encoder.pkl", "rb") as f:
+with open("label_encoder.pkl", "rb") as f:
     label_encoder = pickle.load(f)
 
 # Encode true labels
 y_test_encoded = label_encoder.transform(y_test)
 
 # Load trained models
-with open("model/saved_models.pkl", "rb") as f:
+with open("saved_models.pkl", "rb") as f:
     models = pickle.load(f)
 
 results = []
@@ -55,3 +55,4 @@ for name, model in models.items():
 
 results_df = pd.DataFrame(results)
 print(results_df)
+
