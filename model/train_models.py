@@ -1,4 +1,3 @@
-
 import os
 import pickle
 import pandas as pd
@@ -11,17 +10,18 @@ from sklearn.naive_bayes import GaussianNB
 from sklearn.ensemble import RandomForestClassifier
 from xgboost import XGBClassifier
 
+# Absolute paths (VERY IMPORTANT)
+BASE_DIR = os.path.dirname(os.path.dirname(__file__))
+MODEL_DIR = os.path.dirname(__file__)
 
-# Create model folder if not exists
-os.makedirs("model", exist_ok=True)
+os.makedirs(MODEL_DIR, exist_ok=True)
 
 print("Downloading dataset from UCI...")
 
-# UCI HAR Dataset (official)
 url = "https://raw.githubusercontent.com/selva86/datasets/master/HARtrain.csv"
 df = pd.read_csv(url)
 
-# Target and features
+# Features and target
 X = df.drop("Activity", axis=1)
 y = df["Activity"]
 
@@ -29,14 +29,14 @@ y = df["Activity"]
 label_encoder = LabelEncoder()
 y_encoded = label_encoder.fit_transform(y)
 
-with open("model/label_encoder.pkl", "wb") as f:
+with open(os.path.join(MODEL_DIR, "label_encoder.pkl"), "wb") as f:
     pickle.dump(label_encoder, f)
 
 # Scale features
 scaler = StandardScaler()
 X_scaled = scaler.fit_transform(X)
 
-with open("model/scaler.pkl", "wb") as f:
+with open(os.path.join(MODEL_DIR, "scaler.pkl"), "wb") as f:
     pickle.dump(scaler, f)
 
 print("Training models...")
@@ -51,7 +51,7 @@ models = {
         objective="multi:softmax",
         num_class=len(set(y_encoded)),
         eval_metric="mlogloss"
-    ),
+    )
 }
 
 trained_models = {}
@@ -61,7 +61,7 @@ for name, model in models.items():
     trained_models[name] = model
     print(f"{name} trained")
 
-with open("model/saved_models.pkl", "wb") as f:
+with open(os.path.join(MODEL_DIR, "saved_models.pkl"), "wb") as f:
     pickle.dump(trained_models, f)
 
 print("✅ All models trained and saved successfully!")
