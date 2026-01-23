@@ -10,7 +10,7 @@ from sklearn.ensemble import RandomForestClassifier
 from xgboost import XGBClassifier
 
 # Load dataset
-df = pd.read_csv("data/train.csv")
+df = pd.read_csv("train.csv")
 
 X = df.drop("Activity", axis=1)
 y = df["Activity"]
@@ -20,7 +20,7 @@ label_encoder = LabelEncoder()
 y_encoded = label_encoder.fit_transform(y)
 
 # Save label encoder
-with open("model/label_encoder.pkl", "wb") as f:
+with open("label_encoder.pkl", "wb") as f:
     pickle.dump(label_encoder, f)
 
 # Scale features
@@ -28,7 +28,7 @@ scaler = StandardScaler()
 X_scaled = scaler.fit_transform(X)
 
 # Save scaler
-with open("model/scaler.pkl", "wb") as f:
+with open("scaler.pkl", "wb") as f:
     pickle.dump(scaler, f)
 
 # Define models
@@ -53,7 +53,8 @@ for name, model in models.items():
     trained_models[name] = model
 
 # Save models
-with open("model/saved_models.pkl", "wb") as f:
+with open("saved_models.pkl", "wb") as f:
     pickle.dump(trained_models, f)
 
 print("✅ All models trained successfully")
+
