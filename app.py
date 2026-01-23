@@ -26,8 +26,8 @@ if not os.path.exists(MODEL_FILE):
 
     st.info("First run: Training models... please wait ⏳ (~40 sec)")
 
-    url = "train.csv"
-    df = pd.read_csv(url)
+    
+    df = pd.read_csv(data/test.csv)
 
     X = df.drop("Activity", axis=1)
     y = df["Activity"]
@@ -102,4 +102,5 @@ if uploaded_file:
             results[name] = preds_labels[:5]
 
         st.write(pd.DataFrame(results))
+
 
