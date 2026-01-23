@@ -53,3 +53,4 @@ if uploaded_file:
             results[name] = preds_labels[:5]
 
         st.write(pd.DataFrame(results))
+
