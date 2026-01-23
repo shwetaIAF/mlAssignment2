@@ -26,7 +26,7 @@ if not os.path.exists(MODEL_FILE):
 
     st.info("First run: Training models... please wait ⏳ (~40 sec)")
 
-    url = "https://raw.githubusercontent.com/selva86/datasets/master/HARtrain.csv"
+    url = "train.csv"
     df = pd.read_csv(url)
 
     X = df.drop("Activity", axis=1)
@@ -102,3 +102,4 @@ if uploaded_file:
             results[name] = preds_labels[:5]
 
         st.write(pd.DataFrame(results))
+
