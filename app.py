@@ -1,33 +1,20 @@
 import streamlit as st
-import pandas as pd
 import pickle
-
+import pandas as pd
 import os
 import subprocess
 
-# If model files are not present, train them
-if not os.path.exists("saved_models.pkl"):
-    subprocess.run(["python", "train_models.py"])
-
-
-from sklearn.metrics import (
-    accuracy_score, precision_score, recall_score,
-    f1_score, confusion_matrix, classification_report
-)
-
-st.title("Machine Learning Classification App")
+# Train models automatically on cloud
+if not os.path.exists("model/saved_models.pkl"):
+    subprocess.run(["python", "model/train_models.py"])
 
 # Load models
-with open("saved_models.pkl", "rb") as f:
+with open("model/saved_models.pkl", "rb") as f:
     models = pickle.load(f)
 
-# Load scaler
-with open("scaler.pkl", "rb") as f:
+with open("model/scaler.pkl", "rb") as f:
     scaler = pickle.load(f)
 
-# Load label encoder
-with open("label_encoder.pkl", "rb") as f:
-    label_encoder = pickle.load(f)
 
 # Upload dataset
 uploaded_file = st.file_uploader("Upload Test CSV (with Activity column)", type=["csv"])
@@ -75,6 +62,7 @@ if uploaded_file is not None:
                 target_names=label_encoder.classes_
             )
         )
+
 
 
 
